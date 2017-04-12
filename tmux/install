@@ -1,0 +1,1 @@
+cp ${BASH_SOURCE[0]}/.tmux.conf ~/.tmux.conf

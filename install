@@ -1,0 +1,9 @@
+# tmux
+cp ./tmux/.tmux.conf ~/.tmux.conf
+
+# vim
+if [! -d ".vim"]; then
+	git clone git@github.com:bspaulding/.vim.git
+fi
+cd .vim && sh install && git submodule init && git submodule update && cd ../
+
