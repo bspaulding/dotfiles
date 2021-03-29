@@ -1,2 +1,2 @@
 # tmux
-cp ./tmux/.tmux.conf ~/.tmux.conf
+sh ./tmux/install
