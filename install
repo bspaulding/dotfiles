@@ -1,2 +1,7 @@
-# tmux
-sh ./tmux/install
+# usage via sh -c "$(curl -sSL https://raw.githubusercontent.com/bspaulding/dotfiles/main/install)"
+
+git clone --recurse-submodules https://github.com/bspaulding/.vim.git $HOME/.vim
+sh $HOME/.vim/install
+
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+curl https://raw.githubusercontent.com/bspaulding/dotfiles/main/tmux/.tmux.conf > $HOME/.tmux.conf
