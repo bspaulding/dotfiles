@@ -1,9 +1,7 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
 git clone --recurse-submodules https://github.com/bspaulding/.vim.git $HOME/.vim
 sh $HOME/.vim/install
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-cp $DIR/tmux/.tmux.conf > $HOME/.tmux.conf
+cp ./tmux/.tmux.conf > $HOME/.tmux.conf
