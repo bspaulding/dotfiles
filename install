@@ -1,5 +1,3 @@
-# usage via sh -c "$(curl -sSL https://raw.githubusercontent.com/bspaulding/dotfiles/main/install)"
-
 git clone --recurse-submodules https://github.com/bspaulding/.vim.git $HOME/.vim
 sh $HOME/.vim/install
 
