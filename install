@@ -5,3 +5,5 @@ sh $HOME/.vim/install
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 cp ./tmux/.tmux.conf $HOME/.tmux.conf
+
+cp -r ./alacritty $HOME/.config/alacritty

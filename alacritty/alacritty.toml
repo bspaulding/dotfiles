@@ -1,0 +1,9 @@
+[font]
+normal = { family = "Dank Mono", style = "Regular" }
+size = 18
+
+[scrolling]
+history = 100000
+
+[terminal]
+shell = "/Users/bspaulding/.nix-profile/bin/fish"
