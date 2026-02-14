@@ -606,4 +606,4 @@ working_directory = "None"
 # blue = "0x7da6ff"
 # cyan = "0x0db9d7"
 
-import = [”~/.config/alacritty/themes/inbedby7pm.toml”]
+import = ["~/.config/alacritty/themes/inbedby7pm.toml"]
