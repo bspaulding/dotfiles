@@ -1,0 +1,89 @@
+# In Bed by 7pm
+
+# Ported from Sarah Drasner’s VS Code theme (sdras/inbedby7pm)
+
+# https://github.com/sdras/inbedby7pm
+
+#
+
+# Installation:
+
+# Place this file in ~/.config/alacritty/themes/
+
+# Then add to your alacritty.toml:
+
+# [general]
+
+# import = [”~/.config/alacritty/themes/inbedby7pm.toml”]
+
+[colors.primary]
+background = “#1e1e3f”  # deep indigo
+foreground = “#a599e9”  # soft lavender
+
+[colors.cursor]
+text   = “#1e1e3f”
+cursor = “#a599e9”
+
+[colors.vi_mode_cursor]
+text   = “#1e1e3f”
+cursor = “#fad000”
+
+[colors.search.matches]
+foreground = “#1e1e3f”
+background = “#fad000”
+
+[colors.search.focused_match]
+foreground = “#1e1e3f”
+background = “#ff628c”
+
+[colors.hints.start]
+foreground = “#1e1e3f”
+background = “#fad000”
+
+[colors.hints.end]
+foreground = “#1e1e3f”
+background = “#4b4880”
+
+[colors.selection]
+text       = “CellForeground”
+background = “#342b57”
+
+[colors.footer_bar]
+foreground = “#1e1e3f”
+background = “#4b4880”
+
+# ── Normal colours ────────────────────────────────────────────
+
+[colors.normal]
+black   = “#1e1e3f”  # bg
+red     = “#ff628c”  # errors / deletions
+green   = “#3ad900”  # strings
+yellow  = “#fad000”  # warnings / special
+blue    = “#4d8acf”  # functions
+magenta = “#c792ea”  # types / classes
+cyan    = “#00daef”  # keywords / tags
+white   = “#a599e9”  # foreground
+
+# ── Bright colours ────────────────────────────────────────────
+
+[colors.bright]
+black   = “#4b4880”  # borders / dim
+red     = “#ff628c”  # bright red (same — already vivid)
+green   = “#3ad900”  # bright green
+yellow  = “#fad000”  # bright yellow
+blue    = “#9effff”  # bright blue / parameters
+magenta = “#ff9ac1”  # bright magenta / support / attributes
+cyan    = “#00daef”  # bright cyan
+white   = “#efe9fc”  # bright white / identifiers
+
+# ── Dim colours (used by some multiplexers / inactive panes) ──
+
+[colors.dim]
+black   = “#16162d”
+red     = “#c44d6d”
+green   = “#2da300”
+yellow  = “#c0a000”
+blue    = “#3a6a9e”
+magenta = “#9a6db8”
+cyan    = “#00a8ba”
+white   = “#7b6fc4”
