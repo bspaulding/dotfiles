@@ -1,22 +1,22 @@
 if status is-interactive
-    # Commands to run in interactive sessions can go here
     fish_vi_key_bindings
 end
 
-set -x PATH /opt/homebrew/opt/gnu-sed/libexec/gnubin $PATH
-set -x PATH /nix/var/nix/profiles/default/bin $PATH
+if test -x /opt/homebrew/bin/brew
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    fish_add_path /opt/homebrew/opt/gnu-sed/libexec/gnubin
+end
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if test -f $HOME/.local/bin/env.fish
+    source $HOME/.local/bin/env.fish
+end
 
-eval "$(fnm env)"
+# ghcup
+set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME
+fish_add_path $HOME/.cabal/bin $HOME/.ghcup/bin
 
-source $HOME/.local/bin/env.fish
-
-set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; set -gx PATH $HOME/.cabal/bin $PATH /Users/bspaulding/.ghcup/bin # ghcup-env
-# Added by LM Studio CLI (lms)
-set -gx PATH $PATH /Users/bspaulding/.lmstudio/bin
-# End of LM Studio CLI section
-
+# LM Studio
+fish_add_path $HOME/.lmstudio/bin
 
 # opencode
-fish_add_path /Users/bspaulding/.opencode/bin
+fish_add_path $HOME/.opencode/bin
