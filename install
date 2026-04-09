@@ -137,6 +137,27 @@ if command -v fish > /dev/null 2>&1; then
 fi
 echo ""
 
+# Install fnm (Fast Node Manager)
+print_info "Setting up fnm (Fast Node Manager)..."
+if command -v fnm > /dev/null 2>&1; then
+    print_info "fnm already installed at $(command -v fnm)"
+elif command -v nix-env > /dev/null 2>&1; then
+    print_info "Installing fnm via nix..."
+    nix-env -iA nixpkgs.fnm
+    print_success "Installed fnm via nix"
+elif [ "$(uname)" = "Linux" ]; then
+    print_info "Installing fnm via curl installer..."
+    curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$HOME/.local/bin" --skip-shell
+    print_success "Installed fnm via curl"
+elif command -v brew > /dev/null 2>&1; then
+    print_info "Installing fnm via brew..."
+    brew install fnm
+    print_success "Installed fnm via brew"
+else
+    print_warning "Could not install fnm: no supported package manager found"
+fi
+echo ""
+
 # Install tmux config
 print_info "Installing tmux configuration..."
 create_symlink "$DOTFILES_DIR/tmux/.tmux.conf" "$HOME/.tmux.conf" "tmux config"

@@ -1,7 +1,5 @@
 
-# fnm
-set FNM_PATH "/Users/bspaulding/Library/Application Support/fnm"
-if [ -d "$FNM_PATH" ]
-  set PATH "$FNM_PATH" $PATH
-  fnm env | source
+# fnm - Fast Node Manager
+if command -v fnm > /dev/null 2>&1
+    fnm env --shell fish | source
 end
