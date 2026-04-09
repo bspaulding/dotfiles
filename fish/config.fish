@@ -11,9 +11,6 @@ if test -d $HOME/.local/bin
     fish_add_path $HOME/.local/bin
 end
 
-if test -f $HOME/.local/bin/env.fish
-    source $HOME/.local/bin/env.fish
-end
 
 # ghcup
 set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME
