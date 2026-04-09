@@ -92,6 +92,51 @@ create_symlink "$DOTFILES_DIR/fish/conf.d" "$HOME/.config/fish/conf.d" "fish con
 create_symlink "$DOTFILES_DIR/fish/functions" "$HOME/.config/fish/functions" "fish functions"
 echo ""
 
+# Install and configure fish as default shell
+print_info "Setting up fish shell..."
+if command -v fish > /dev/null 2>&1; then
+    print_info "fish already installed at $(command -v fish)"
+elif command -v nix-env > /dev/null 2>&1; then
+    print_info "Installing fish via nix..."
+    nix-env -iA nixpkgs.fish
+    print_success "Installed fish via nix"
+elif [ "$(uname)" = "Linux" ] && command -v apt > /dev/null 2>&1; then
+    print_info "Installing fish via apt..."
+    sudo apt install -y fish
+    print_success "Installed fish via apt"
+elif [ "$(uname)" = "Linux" ] && command -v dnf > /dev/null 2>&1; then
+    print_info "Installing fish via dnf..."
+    sudo dnf install -y fish
+    print_success "Installed fish via dnf"
+elif [ "$(uname)" = "Linux" ] && command -v pacman > /dev/null 2>&1; then
+    print_info "Installing fish via pacman..."
+    sudo pacman -S --noconfirm fish
+    print_success "Installed fish via pacman"
+elif command -v brew > /dev/null 2>&1; then
+    print_info "Installing fish via brew..."
+    brew install fish
+    print_success "Installed fish via brew"
+else
+    print_warning "Could not install fish: no supported package manager found"
+fi
+
+if command -v fish > /dev/null 2>&1; then
+    FISH_PATH="$(command -v fish)"
+    if grep -qF "$FISH_PATH" /etc/shells; then
+        print_info "fish already in /etc/shells"
+    else
+        echo "$FISH_PATH" | sudo tee -a /etc/shells > /dev/null
+        print_success "Added $FISH_PATH to /etc/shells"
+    fi
+    if [ "$SHELL" = "$FISH_PATH" ]; then
+        print_info "fish is already the default shell"
+    else
+        chsh -s "$FISH_PATH"
+        print_success "Set default shell to $FISH_PATH"
+    fi
+fi
+echo ""
+
 # Install tmux config
 print_info "Installing tmux configuration..."
 create_symlink "$DOTFILES_DIR/tmux/.tmux.conf" "$HOME/.tmux.conf" "tmux config"
