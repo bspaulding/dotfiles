@@ -7,6 +7,10 @@ if test -x /opt/homebrew/bin/brew
     fish_add_path /opt/homebrew/opt/gnu-sed/libexec/gnubin
 end
 
+if test -d $HOME/.local/bin
+    fish_add_path $HOME/.local/bin
+end
+
 if test -f $HOME/.local/bin/env.fish
     source $HOME/.local/bin/env.fish
 end
