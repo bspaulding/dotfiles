@@ -4,6 +4,12 @@ function open-worktree
   set sanitized_name (string replace -a / - $name)
   set worktree_path "$HOME/src/$sanitized_name"
 
+  # If the worktree path already exists, just open it
+  if test -d $worktree_path
+    open-project $worktree_path
+    return
+  end
+
   # Check if branch already exists
   if git show-ref --verify --quiet refs/heads/$name
     # Branch exists, create worktree from existing branch
