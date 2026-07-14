@@ -1,8 +1,20 @@
 function open-worktree
-  set name $argv[1]
-  # Sanitize branch name for directory path (replace slashes with dashes)
-  set sanitized_name (string replace -a / - $name)
-  set worktree_path "$HOME/src/$sanitized_name"
+  set arg $argv[1]
+  set git_common_dir (git rev-parse --git-common-dir 2>/dev/null)
+
+  if string match -q '/*' -- $arg
+    # Absolute path: use it as-is, derive the branch name from its basename
+    set worktree_path $arg
+    set name (path basename $arg)
+  else if test -n "$git_common_dir"
+    # Bare name inside a repo: put the worktree in .worktrees, a sibling of .git
+    set name $arg
+    set repo_root (path dirname (realpath $git_common_dir))
+    set worktree_path "$repo_root/.worktrees/"(string replace -a / - $name)
+  else
+    set name $arg
+    set worktree_path "$HOME/src/"(string replace -a / - $name)
+  end
 
   # If the worktree path already exists, just open it
   if test -d $worktree_path
