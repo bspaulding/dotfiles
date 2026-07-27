@@ -1,0 +1,41 @@
+# In Bed by 7pm
+#
+# Ported from Sarah Drasner's VS Code theme (sdras/inbedby7pm)
+# https://github.com/sdras/inbedby7pm
+#
+# This is a Ghostty theme file (same syntax as the main config).
+# Ported from alacritty/themes/inbedby7pm.toml
+
+background = #1e1e3f
+foreground = #a599e9
+
+cursor-color = #a599e9
+cursor-text = #1e1e3f
+
+selection-background = #342b57
+selection-foreground = cell-foreground
+
+search-foreground = #1e1e3f
+search-background = #fad000
+search-selected-foreground = #1e1e3f
+search-selected-background = #ff628c
+
+# Normal colors (0-7)
+palette = 0=#1e1e3f
+palette = 1=#ff628c
+palette = 2=#3ad900
+palette = 3=#fad000
+palette = 4=#4d8acf
+palette = 5=#c792ea
+palette = 6=#00daef
+palette = 7=#a599e9
+
+# Bright colors (8-15)
+palette = 8=#4b4880
+palette = 9=#ff628c
+palette = 10=#3ad900
+palette = 11=#fad000
+palette = 12=#9effff
+palette = 13=#ff9ac1
+palette = 14=#00daef
+palette = 15=#efe9fc

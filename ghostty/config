@@ -1,0 +1,11 @@
+shell-integration = fish
+command = /Users/bspaulding/.nix-profile/bin/fish --login
+
+font-family = Dank Mono
+font-size = 18
+
+cursor-style = block
+
+mouse-hide-while-typing = false
+
+theme = inbedby7pm

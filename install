@@ -85,6 +85,11 @@ print_info "Installing alacritty configuration..."
 create_symlink "$DOTFILES_DIR/alacritty" "$HOME/.config/alacritty" "alacritty config"
 echo ""
 
+# Install ghostty config
+print_info "Installing ghostty configuration..."
+create_symlink "$DOTFILES_DIR/ghostty" "$HOME/.config/ghostty" "ghostty config"
+echo ""
+
 # Install fish config
 print_info "Installing fish configuration..."
 create_symlink "$DOTFILES_DIR/fish/config.fish" "$HOME/.config/fish/config.fish" "fish config.fish"
