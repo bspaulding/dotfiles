@@ -1,4 +1,5 @@
 shell-integration = fish
+command = tmux new-session -A -s HOME -c $HOME
 
 font-family = Dank Mono
 font-size = 18
