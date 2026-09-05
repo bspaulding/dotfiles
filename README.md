@@ -24,6 +24,7 @@ The install script will:
 Installs dotfiles by creating symlinks from the repo to your home directory.
 
 **What it links:**
+- `./nix/nix.conf` → `~/.config/nix/nix.conf`
 - `./alacritty/` → `~/.config/alacritty/`
 - `./fish/config.fish` → `~/.config/fish/config.fish`
 - `./fish/conf.d/` → `~/.config/fish/conf.d/`

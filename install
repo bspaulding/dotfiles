@@ -90,6 +90,11 @@ print_info "Installing ghostty configuration..."
 create_symlink "$DOTFILES_DIR/ghostty" "$HOME/.config/ghostty" "ghostty config"
 echo ""
 
+# Install nix config
+print_info "Installing nix configuration..."
+create_symlink "$DOTFILES_DIR/nix/nix.conf" "$HOME/.config/nix/nix.conf" "nix config"
+echo ""
+
 # Install fish config
 print_info "Installing fish configuration..."
 create_symlink "$DOTFILES_DIR/fish/config.fish" "$HOME/.config/fish/config.fish" "fish config.fish"

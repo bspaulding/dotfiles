@@ -81,6 +81,7 @@ check_symlink() {
     fi
 }
 
+check_symlink "$HOME/.config/nix/nix.conf" "nix config"
 check_symlink "$HOME/.config/alacritty" "alacritty"
 check_symlink "$HOME/.config/fish/config.fish" "fish config.fish"
 check_symlink "$HOME/.config/fish/conf.d" "fish conf.d"
@@ -106,6 +107,11 @@ if [ $SYMLINKS_FOUND -eq 1 ]; then
 fi
 
 print_success "No symlinks detected - safe to capture"
+echo ""
+
+# Capture nix config
+print_info "Capturing nix configuration..."
+capture_config "$HOME/.config/nix/nix.conf" "$DOTFILES_DIR/nix/nix.conf" "nix config"
 echo ""
 
 # Capture alacritty config
