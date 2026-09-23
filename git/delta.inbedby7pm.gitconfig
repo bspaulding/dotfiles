@@ -1,0 +1,86 @@
+# In Bed by 7pm - delta theme
+#
+# Ported from the inbedby7pm color palette (Sarah Drasner's VS Code theme,
+# https://github.com/sdras/inbedby7pm) to delta (https://dandavison.github.io/delta/).
+# Same family as alacritty/themes/inbedby7pm.toml, ghostty/themes/inbedby7pm,
+# tmux/inbedby7pm.conf, fish/conf.d/inbedby7pm.fish.
+#
+# Usage:
+#   [include]
+#       path = /PATH/TO/dotfiles/git/delta.inbedby7pm.gitconfig
+#
+#   [delta]
+#       features = inbedby7pm
+#
+# Palette (16-color scheme shared across this dotfiles family):
+#   bg        #1e1e3f  deep indigo
+#   bg_alt    #2d2b55  lighter indigo
+#   border    #4b4880  dim borders
+#   fg        #a599e9  soft lavender
+#   fg_dim    #7b6fc4  dimmer lavender
+#   comment   #7a6897  muted purple-grey
+#   red       #ff628c  errors / deletions
+#   yellow    #fad000  warnings
+#   green     #3ad900  additions / strings
+#   cyan      #00daef  keywords
+#   blue      #4d8acf  functions
+#   purple    #c792ea  types / accent
+#   pink      #ff9ac1  special
+#   white     #efe9fc  bright identifiers
+#
+# Note: if you ever submit this to the upstream delta repo, theme names must
+# be wild organisms (see https://dandavison.github.io/delta/custom-themes.html).
+
+[delta "inbedby7pm"]
+    dark = true
+
+    # Syntax highlighting: Dracula is the closest builtin to inbedby7pm's
+    # purple/cyan/pink accent palette
+    syntax-theme = Dracula
+
+    # ── Diff body ─────────────────────────────────────────────
+    # Deletions: pink (red) tinted indigo
+    minus-style = syntax "#4b2c4f"
+    minus-emph-style = syntax bold "#6c3659"
+    minus-empty-line-marker-style = "#7a6897"
+    # Additions: green tinted indigo
+    plus-style = syntax "#244335"
+    plus-emph-style = syntax bold "#28602e"
+    plus-empty-line-marker-style = "#7a6897"
+    zero-style = dim
+    whitespace-error-style = "#ff628c" reverse
+
+    # ── Line numbers ──────────────────────────────────────────
+    line-numbers = true
+    line-numbers-left-format = "{nm:>1}┊"
+    line-numbers-left-style = "#4b4880"
+    line-numbers-minus-style = "#ff628c"
+    line-numbers-plus-style = "#3ad900"
+    line-numbers-right-format = " {np:>1}┊"
+    line-numbers-right-style = "#4b4880"
+    line-numbers-zero-style = "#7a6897" italic
+
+    # ── File headers ──────────────────────────────────────────
+    file-style = "#c792ea" bold
+    file-decoration-style = "#4b4880" overline
+    file-added-label = [+]
+    file-copied-label = [C]
+    file-modified-label = [M]
+    file-removed-label = [-]
+    file-renamed-label = [→]
+
+    # ── Hunk headers ──────────────────────────────────────────
+    hunk-header-style = syntax
+    hunk-header-decoration-style = "#4b4880" ul
+    hunk-header-file-style = "#4d8acf"
+    hunk-header-line-number-style = "#fad000"
+    hunk-header-spacing = 1
+
+    # ── Commit headers ────────────────────────────────────────
+    commit-style = "#fad000" bold
+    commit-decoration-style = "#4b4880" box
+
+    # ── Blame ─────────────────────────────────────────────────
+    blame-code-style = syntax
+    blame-format = "{author:<18} ({commit:>7}) ┊{timestamp:^16}┊ "
+    blame-palette = "#16162d" "#2d2b55" "#342b57" "#4b4880"
