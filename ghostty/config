@@ -1,5 +1,5 @@
 shell-integration = fish
-command = tmux new-session -A -s HOME -c $HOME
+command = sh -c 'PATH="$HOME/.nix-profile/bin:/opt/homebrew/bin:/usr/local/bin:$PATH" exec tmux new-session -A -s HOME -c "$HOME"'
 
 font-family = Dank Mono
 font-size = 18
