@@ -21,3 +21,8 @@ fish_add_path $HOME/.lmstudio/bin
 
 # opencode
 fish_add_path $HOME/.opencode/bin
+
+# machine-local secrets, intentionally not tracked in this repo
+if test -f $HOME/.config/fish/secrets.fish
+    source $HOME/.config/fish/secrets.fish
+end
