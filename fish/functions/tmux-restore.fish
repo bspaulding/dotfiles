@@ -27,6 +27,21 @@ def known($ids; $id): any($ids[]; . == $id);
 def send($s; $target; $cmd): [$s, "tmux", "send-keys", "-t", $target, $cmd, "Enter"];
 def note($s; $text): [$s, "#", $text];
 
+# Input validation.  The save file is data, not code: reject any string with a
+# control character (this covers the 0x1f row separator, newlines and terminal
+# escapes) and any argument tmux would read as a command separator (trailing ;).
+def clean: type == "string" and (explode | all(. >= 32 and . != 127)) and (endswith(";") | not);
+def numeric: type == "string" and test("^[0-9]+$");
+def valid_pane: (.index | numeric) and (.command | clean);
+def valid_window:
+  (.index | numeric) and (.cwd | clean) and (.panes | type == "array") and (.panes | all(.[]; valid_pane))
+  and (.agent == null or ((.agent.kind | clean) and (.agent.sessionId | clean)));
+# tmux session names never contain ":" or ".", and they would corrupt targets.
+def valid_session:
+  try ((.session | clean and (test("[:.]") | not))
+       and (.windows | type == "array") and (.windows | all(.[]; valid_window)))
+  catch false;
+
 # agent -> {cmd, note?}; resume only when the transcript exists, else start fresh.
 def agent_command($claude_ids; $pi_ids):
   if .kind == "claude" then
@@ -81,7 +96,9 @@ def session_rows($claude_ids; $pi_ids):
 [ .[]
   | .session as $n
   | select(($only | length) == 0 or any($only[]; . == $n))
-  | session_rows($claude_ids; $pi_ids)[] ]
+  | if valid_session then session_rows($claude_ids; $pi_ids)[]
+    # Empty session field = global note; @json escapes any control characters.
+    else ["", "#", "skipping session \($n | @json): unexpected characters or shape in saved fields"] end ]
 | .[]
 | join("\u001f")
 '
@@ -143,6 +160,15 @@ function __tmux_restore_print --description 'Render plan rows as text'
 end
 
 # ---------------------------------------------------------------------------
+# __tmux_restore_allowed <argv...>
+#   Succeeds only for `tmux <subcommand> ...` with a subcommand the planner uses.
+# ---------------------------------------------------------------------------
+function __tmux_restore_allowed --description 'Is this argv an expected tmux command?'
+  test "$argv[1]" = tmux
+  and contains -- "$argv[2]" new-session new-window split-window move-window send-keys
+end
+
+# ---------------------------------------------------------------------------
 # __tmux_restore_exec <rows...>
 #   Run the plan.  A session that already exists is skipped whole; a command
 #   that fails abandons the rest of that session but not the others.
@@ -153,6 +179,12 @@ function __tmux_restore_exec --description 'Execute plan rows with tmux'
   for line in $argv
     set -l f (string split \x1f -- $line)
     set -l session $f[1]
+
+    # Global note (no session): print and move on.
+    if test -z "$session"
+      echo "tmux-restore: $f[3]" >&2
+      continue
+    end
 
     # First row of a session: skip it entirely if tmux already has it.
     if not contains -- $session $seen
@@ -166,6 +198,10 @@ function __tmux_restore_exec --description 'Execute plan rows with tmux'
 
     if test "$f[2]" = '#'
       echo "tmux-restore: $f[3]" >&2
+    else if not __tmux_restore_allowed $f[2..-1]
+      # Defense in depth: the planner should never emit this.
+      set -a skipped $session
+      echo "tmux-restore: '$session': refusing unexpected command; abandoning this session" >&2
     else if not command $f[2..-1]
       set -a skipped $session
       echo "tmux-restore: '$session': command failed ("(string join ' ' -- $f[2..-1])"); abandoning this session" >&2
