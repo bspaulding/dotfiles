@@ -47,41 +47,101 @@ function __tmux_claude_session_id --description 'Get claude session ID from PID'
 end
 
 # ---------------------------------------------------------------------------
+# __tmux_pi_start_epoch <pid>
+#   Output: process start time as epoch seconds (local-time lstart parsed).
+# ---------------------------------------------------------------------------
+function __tmux_pi_start_epoch --description 'Process start time as epoch seconds'
+    set -l lstart (ps -p $argv[1] -o lstart= 2>/dev/null | string trim)
+    test -n "$lstart"; or return 1
+    date -j -f '%a %b %e %T %Y' "$lstart" +%s 2>/dev/null
+end
+
+# ---------------------------------------------------------------------------
+# __tmux_pi_file_epoch <session.jsonl path>
+#   Output: creation time (epoch seconds) parsed from the UTC timestamp that
+#   pi puts in the filename: 2026-11-16T15-54-46-538Z_<uuid>.jsonl
+# ---------------------------------------------------------------------------
+function __tmux_pi_file_epoch --description 'Session creation epoch from pi session filename'
+    set -l stamp (string replace -r '^(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}).*' '$1' -- (basename $argv[1]))
+    date -j -u -f '%Y-%m-%dT%H-%M-%S' "$stamp" +%s 2>/dev/null
+end
+
+# ---------------------------------------------------------------------------
+# __tmux_pi_peer_starts <cwd>
+#   Output: start epochs (ascending) of every live pi process whose cwd is <cwd>.
+# ---------------------------------------------------------------------------
+function __tmux_pi_peer_starts --description 'Start epochs of all pi processes in a cwd'
+    set -l cwd $argv[1]
+    for p in (ps -eo pid=,comm= | awk '$2=="pi" {print $1}')
+        set -l pcwd (lsof -p $p 2>/dev/null | awk '$4=="cwd" {print $9; exit}')
+        if test "$pcwd" = "$cwd"
+            __tmux_pi_start_epoch $p
+        end
+    end | sort -n
+end
+
+# ---------------------------------------------------------------------------
+# __tmux_pi_first_created_in <lo> <hi> <files...>
+#   Output: first file (callers pass newest-mtime first) whose creation epoch
+#   is in [lo, hi), or nothing.
+# ---------------------------------------------------------------------------
+function __tmux_pi_first_created_in --description 'First session file created within an epoch range'
+    set -l lo $argv[1]
+    set -l hi $argv[2]
+    for f in $argv[3..-1]
+        set -l e (__tmux_pi_file_epoch $f)
+        if test -n "$e"; and test $e -ge $lo; and test $e -lt $hi
+            printf '%s\n' $f
+            return 0
+        end
+    end
+    return 1
+end
+
+# ---------------------------------------------------------------------------
 # __tmux_pi_session_id <pi_pid>
 #   Output: session UUID string, or empty.
-#   Reads cwd via lsof, slugs it, finds the latest .jsonl in
-#   ~/.pi/agent/sessions/--<slug>--/, extracts UUID from filename.
+#
+#   pi keeps no session file open and exposes no env var / argv for its session,
+#   so "newest .jsonl in the cwd" is wrong whenever two pi processes share a cwd
+#   (or the newest file belongs to an exited process).  Instead use start times:
+#     1. A fresh pi (or one that did /new) creates its session file during its
+#        own lifetime -> the newest file created in [my_start, next peer's start).
+#     2. Otherwise it resumed an older session -> the newest-mtime file created
+#        before any live pi in this cwd started.
+#   Known limit: two peers that both *resumed* old sessions collide on rule 2.
 # ---------------------------------------------------------------------------
 function __tmux_pi_session_id --description 'Get pi session ID from PID'
     set -l pid $argv[1]
-    if test -z "$pid"
-        return 1
-    end
+    test -n "$pid"; or return 1
 
-    # Get cwd of the pi process
     set -l cwd (lsof -p $pid 2>/dev/null | awk '$4=="cwd" {print $9; exit}')
-    if test -z "$cwd"
-        return 1
-    end
+    test -n "$cwd"; or return 1
 
     # Slug the path: strip leading /, replace / with -
     set -l slug (printf '%s' "$cwd" | sed 's|^/||; s|/|-|g')
-    set -l session_dir ~/.pi/agent/sessions/--$slug--
+    set -l files (command ls -t ~/.pi/agent/sessions/--$slug--/*.jsonl 2>/dev/null)
+    test -n "$files"; or return 1
 
-    # Find the most recent .jsonl file
-    set -l latest (command ls -t "$session_dir"/*.jsonl 2>/dev/null | head -1)
-    if test -z "$latest"
-        return 1
-    end
+    set -l my_start (__tmux_pi_start_epoch $pid); or return 1
+    set -l starts (__tmux_pi_peer_starts $cwd)
+    # Next peer to start after me bounds my lifetime window; none -> unbounded.
+    set -l next_start (printf '%s\n' $starts | awk -v s=$my_start '$1>s {print $1; exit}')
+    test -n "$next_start"; or set next_start 99999999999
+    set -l first_start (printf '%s\n' $starts | head -1)
+    test -n "$first_start"; or set first_start $my_start
+
+    # 2s slack: lstart is whole seconds, the file is created ~0.5s after start.
+    set -l chosen (__tmux_pi_first_created_in (math $my_start - 2) (math $next_start - 2) $files)
+    test -n "$chosen"; or set chosen (__tmux_pi_first_created_in 0 (math $first_start - 2) $files)
+    test -n "$chosen"; or return 1
 
     # Extract UUID from the filename: timestamp_UUID.jsonl
-    set -l sid (printf '%s' "$latest" | sed 's/.*_\([a-f0-9-]*\)\.jsonl$/\1/')
-    if test -n "$sid"
-        and test "$sid" != "$latest"
+    set -l sid (printf '%s' "$chosen" | sed 's/.*_\([a-f0-9-]*\)\.jsonl$/\1/')
+    if test -n "$sid"; and test "$sid" != "$chosen"
         printf '%s\n' $sid
         return 0
     end
-
     return 1
 end
 
