@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
-# tmux-save-fast.sh — single-pass equivalent of the tmux-save fish function.
-# Prints the same JSON document on stdout.  Called by the tmux-save-fast fish function.
+# tmux-save.sh — serialize tmux state to JSON on stdout.  Called by the tmux-save fish function.
 #
-# Why it is fast: tmux-save spawns hundreds of processes (a `ps` per pane, `jq` for
-# every string, `lsof` per pi, and an lsof-per-pi-per-pi peer scan).  This does the
-# whole job in a fixed number of calls regardless of how many sessions there are:
+# It does the whole job in a fixed number of external calls regardless of how many
+# sessions there are (an earlier per-pane implementation took ~13s at 47 sessions):
 #   tmux x1, ps x1, lsof x1 and ls x1 (only if a pi is running),
 #   jq x1 for claude PID.json files (only if needed), jq x1 to assemble.
 #
-# Resolution rules match tmux-save exactly (claude: --resume arg, else PID.json;
-# pi: the start-time algorithm in __tmux_pi_session_id).  Known deliberate difference:
-# a pi whose cwd contains a space is resolved correctly (tmux-save truncates the path).
+# Agent session ids:
+#   claude  the --resume argument, else ~/.claude/sessions/<pid>.json
+#   pi      keeps no session file open and exposes no argv/env for its session, so match
+#           by start time: a fresh (or /new'd) pi owns the newest session file created
+#           during its lifetime [its start, next peer's start); otherwise it resumed an
+#           older session -> the newest-mtime file created before any live pi in that
+#           cwd started.  2s slack: lstart is whole seconds, the file appears ~0.5s later.
+#           Known limit: two peers that both *resumed* old sessions collide.
 #
 # Portability: written for bash 3.2 (macOS /bin/bash: no associative arrays) and for
 # BWK awk (macOS awk: no newlines in `awk -v`).  Needs jq >= 1.6.
